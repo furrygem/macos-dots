@@ -15,7 +15,50 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   vim.cmd [[packadd packer.nvim]]
 end
 
+
 require('packer').startup(function(use)
+  -- which key
+  use {
+  "folke/which-key.nvim",
+  config = function()
+    vim.o.timeout = true
+    vim.o.timeoutlen = 300
+    require("which-key").setup {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    }
+  end
+  }
+  -- toggle terminal
+  use {"akinsho/toggleterm.nvim", tag = '*'}
+  -- todo comments
+  use {
+  "folke/todo-comments.nvim",
+  requires = "nvim-lua/plenary.nvim",
+  config = function()
+    require("todo-comments").setup {}
+  end
+  }
+  -- notify
+  use 'rcarriga/nvim-notify'
+  -- smooth scrolling
+  use 'karb94/neoscroll.nvim'
+  -- bufferline
+  use {'akinsho/bufferline.nvim', tag = "v3.*", requires = "nvim-tree/nvim-web-devicons"}
+  --tagbar
+  use 'preservim/tagbar'
+  -- debug
+  use 'mfussenegger/nvim-dap'
+  -- debug go
+  use 'leoluz/nvim-dap-go'
+  -- ui for dap
+  use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
+  -- nginx config
+  use 'chr4/nginx.vim'
+
+  use 'iamcco/markdown-preview.nvim'
+  use 'neoclide/coc.nvim'
   -- highlight same words
   use 'xiyaowong/nvim-cursorword'
   -- Package manager
@@ -26,6 +69,7 @@ require('packer').startup(function(use)
   -- surround vim
   use 'tpope/vim-surround'
   use 'jiangmiao/auto-pairs'
+  use 'ray-x/lsp_signature.nvim'
 
   use { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
@@ -103,6 +147,8 @@ if is_bootstrap then
   print '=================================='
   return
 end
+
+vim.cmd.nmap('<F8>', ':TagbarToggle<CR>')
 
 -- Automatically source and re-compile packer whenever you save this init.lua
 local packer_group = vim.api.nvim_create_augroup('Packer', { clear = true })
@@ -210,6 +256,28 @@ require('lualine').setup {
   },
 }
 
+require("toggleterm").setup()
+
+require('todo-comments').setup()
+
+require('neoscroll').setup()
+
+vim.opt.termguicolors = true
+require("bufferline").setup()
+
+require('dap-go').setup()
+
+require('neodev').setup({
+  library = { plugins = { "nvim-dap-ui", types = true } },
+  ...
+})
+
+-- require "lsp_signature".setup(cfg)
+require "lsp_signature".setup({
+  bind = true,
+  hint_prefix = '🦊 ',
+})
+
 -- Enable Comment.nvim
 require('Comment').setup()
 
@@ -230,6 +298,10 @@ require('gitsigns').setup {
     topdelete = { text = '‾' },
     changedelete = { text = '~' },
   },
+  current_line_blame = true,
+  current_line_blame_opts = {
+    virt_text = true,
+  }
 }
 
 -- [[ Configure Telescope ]]
